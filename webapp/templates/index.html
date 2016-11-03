@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=utf-8 />
+    <title>Veterinarias</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; margin-top: 50px;}
+      .navbar-inverse { background-color: #6E8B3D !important; border-color: #556B2F !important;}
+      .navbar-brand {color: white !important;}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Veterinarias | Municipalidad de Miraflores - Datos Abiertos</a>
+        </div>
+      </div>
+    </nav>
+    <div id='map'></div>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+    <script>
+      L.mapbox.accessToken = 'pk.eyJ1Ijoib3NndXgiLCJhIjoiVlRDVmZrRSJ9.ykpiXi2ryABxfZaBfZxnYw';
+      var map = L.mapbox.map('map', 'mapbox.streets')
+        .setView([-12.125, -77.022], 14);
+
+      map.featureLayer.on('click', function(e) {
+          map.panTo(e.layer.getLatLng());
+      });
+
+      $.get("/locales", function(data){
+        $.each(data, function(k,v){
+          if(v.latitud != null) {
+            L.mapbox.featureLayer({
+              type: 'Feature',
+              geometry: {
+                  type: 'Point',
+                  coordinates: [
+                    v.longitud,
+                    v.latitud
+                  ]
+              },
+              properties: {
+                  title: v.razonsocial,
+                  description: v.giro + " - " + v.direccion,
+                  'marker-size': 'large',
+                  'marker-color': '#FF6A6A',
+                  'marker-symbol': 'dog-park'
+              }
+            }).addTo(map);
+          }
+
+        });
+      });
+
+    </script>
+
+  </body>
+</html>
